@@ -1,0 +1,288 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, doctor, patient, admin]
+        isVerified:
+          type: boolean
+        isRegistrationComplete:
+          type: boolean
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        dateOfBirth:
+          type: string
+        emergencyContact:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        gender:
+          type: string
+          enum: [male, female]
+        dateOfGraduation:
+          type: string
+          description: Doctors only
+        licenseNumber:
+          type: int32
+          description: Doctors only
+        speciality:
+          type: string
+          description: Doctors only
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        email: fake@example.com
+        name: fake name
+        role: doctor
+        isVerified: true
+        isRegistrationComplete: true
+        phone: +12391027
+        address: Libery street 123
+        city: New York
+        dateOfBirth: 1980-12-20T00:00:00.000Z
+        emergencyContact: +31201329
+        firstname: Jon
+        lastname: Doe
+        dateOfGraduation: 1990-12-01T00:00:00.000Z
+        licenseNumber: 123213321
+        speciality: Orthopedist
+        createdAt: 2021-05-11T19:28:09.299Z
+        updatedAt: 2021-05-12T18:10:32.447Z
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+        expires:
+          type: string
+          format: date-time
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg
+        expires: 2020-05-12T16:18:04.793Z
+
+    AuthTokens:
+      type: object
+      properties:
+        access:
+          $ref: "#/components/schemas/Token"
+        refresh:
+          $ref: "#/components/schemas/Token"
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+
+    Medication:
+      type: object
+      properties:
+        name:
+          type: string
+        dosage:
+          type: string
+      example:
+        name: Vikidin
+        dosage: One tablet per day
+
+    Perscription:
+      type: object
+      properties:
+        id:
+          type: string
+        appointmentId:
+          type: string
+        perscriptionEndDate:
+          type: string
+        note:
+          type: string
+        medication:
+          type: array
+          items:
+            $ref: "#/components/schemas/Medication"
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      example:
+        id: 60a0f237f46f411448fd9182
+        appointmentId: 609f96770d21a60c78aef81c
+        perscriptionEndDate: 2020-01-05T16:00:00.000Z
+        note: Note
+        medication:
+          - name: Vikidin
+            dosage: One per day
+        createdAt: 2021-05-16T10:21:43.855Z
+        updatedAt: 2021-05-16T10:21:43.855Z
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        senderId:
+          type: string
+        conversationId:
+          type: string
+        type:
+          type: string
+          enum: [text, image, voice]
+        status:
+          type: string
+          enum: [sent, delivered, recieved]
+        isDeleted:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        participants:
+          type: array
+          items:
+            type: string
+        isDeleted:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    Issue:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [patient, system]
+        description:
+          type: string
+        reporter:
+          type: object
+          $ref: "#/components/schemas/User"
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    Feedback:
+      type: object
+      properties:
+        id:
+          type: string
+        rating:
+          type: int32
+        details:
+          type: string
+        patientId:
+          type: string
+        doctorId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: string
+        diseaseName:
+          type: string
+        appointmentDatTime:
+          type: string
+        details:
+          type: string
+        patientId:
+          type: string
+        doctorId:
+          type: string
+        paidInAdvance:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+  responses:
+    DuplicateEmail:
+      description: Email already taken
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: 400
+            message: Email already taken
+    DuplicatePhone:
+      description: Phone already taken
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: 400
+            message: Phone already taken
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: 401
+            message: Please authenticate
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: 403
+            message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: 404
+            message: Not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
